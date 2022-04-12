@@ -54,6 +54,9 @@ func main() {
 	notfoundHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 	})
+	errHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusInternalServerError)
+	})
 
 	foundChain := promhttp.InstrumentHandlerDuration(
 		httpRequestDuration.MustCurryWith(prometheus.Labels{"handler": "found"}),
@@ -62,8 +65,9 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.Handle("/", foundChain)
-	mux.Handle("/err", promhttp.InstrumentHandlerCounter(httpRequestsTotal, notfoundHandler))
+	mux.Handle("/404", promhttp.InstrumentHandlerCounter(httpRequestsTotal, notfoundHandler))
 	mux.Handle("/metrics", promhttp.HandlerFor(r, promhttp.HandlerOpts{}))
+	mux.Handle("/500", promhttp.InstrumentHandlerCounter(httpRequestsTotal, errHandler))
 
 	var srv *http.Server
 	if enableH2c {

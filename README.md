@@ -2,7 +2,13 @@
 
 This example app serves as an example of how one can easily instrument HTTP handlers with [Prometheus][prometheus] metrics. It uses the Prometheus [go client][client-golang] to create a new Prometheus registry.
 
-Usage is simple, on any request to `/` the request will result in a `200` response code. This increments the counter for this response code. Similarly the `/err` endpoint will result in a `404` response code, therefore increments that respective counter. Duration metrics are also exposed for any request to `/`.
+Usage is simple, on any request to `/` the request will result in a `200` 
+response code. This increments the counter for this response code. Similarly, 
+the `/404` endpoint will result in a `404` response code, therefore 
+increments that respective counter. Any request to `/500` will increment the 
+respective counter for errors. 
+
+Duration metrics are also exposed for any request to `/`.
 
 A Docker image is available at: `ghcr.io/rhobs/prometheus-example-app:0.3.0`
 
@@ -25,9 +31,9 @@ For this example application, [PodMonitor manifest](manifests/pod-monitor.yaml) 
 The following metrics are exposed:
 
 - `version` - of type _gauge_ - containing the app version - as a constant metric value `1` and label `version`, representing this app version
-- `http_requests_total` - of type _counter_ - representing the total numbere of incoming HTTP requests
+- `http_requests_total` - of type _counter_ - representing the total number of incoming HTTP requests
 - `http_request_duration_seconds` - of type _histogram_, representing duration of all HTTP requests
-- `http_request_duration_seconds_count`- total count of all incoming HTTP requeests
+- `http_request_duration_seconds_count`- total count of all incoming HTTP requests
 - `http_request_duration_seconds_sum` - total duration in seconds of all incoming HTTP requests
 - `http_request_duration_seconds_bucket` - a histogram representation of the duration of the incoming HTTP requests
 
